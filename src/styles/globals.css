@@ -1,0 +1,425 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dark: #8a6020;
+  --gold-dim: rgba(201, 168, 76, 0.15);
+  --gold-glow: rgba(201, 168, 76, 0.3);
+  --black: #050505;
+  --deep: #0d0d0d;
+  --surface: #1a1a1a;
+  --surface2: #222222;
+  --text: #f0ece4;
+  --muted: #6b6460;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-gold: rgba(201, 168, 76, 0.2);
+
+  /* Phone dimensions */
+  --phone-w: 393px;
+  --phone-h: 852px;
+  --phone-radius: 55px;
+  --island-radius: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Selection */
+::selection {
+  background: var(--gold-dim);
+  color: var(--gold-light);
+}
+
+/* ==========================================
+   GRAIN TEXTURE OVERLAY
+   ========================================== */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  animation: grain 0.8s steps(1) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { background-position: 0 0; }
+  10% { background-position: -5% -10%; }
+  20% { background-position: -15% 5%; }
+  30% { background-position: 7% -25%; }
+  40% { background-position: -5% 25%; }
+  50% { background-position: -15% 10%; }
+  60% { background-position: 15% 5%; }
+  70% { background-position: 0 15%; }
+  80% { background-position: 3% 35%; }
+  90% { background-position: -10% 10%; }
+}
+
+/* ==========================================
+   PHONE SHELL
+   ========================================== */
+.phone-shell {
+  position: relative;
+  width: var(--phone-w);
+  height: var(--phone-h);
+  border-radius: var(--phone-radius);
+  background: linear-gradient(160deg, #2a2826 0%, #111110 50%, #1a1917 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 240, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.8),
+    inset 1px 0 0 rgba(255, 255, 240, 0.06),
+    inset -1px 0 0 rgba(255, 255, 240, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 0 0 12px #1c1c1e,
+    0 0 0 13px rgba(255, 255, 255, 0.06),
+    0 80px 160px rgba(0, 0, 0, 0.95),
+    0 0 0 14px rgba(0,0,0,0.3),
+    0 0 100px rgba(201, 168, 76, 0.05);
+  overflow: hidden;
+}
+
+/* Side buttons */
+.phone-shell::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 120px;
+  width: 3px;
+  height: 32px;
+  background: linear-gradient(180deg, #2a2826, #1a1816);
+  border-radius: 2px 0 0 2px;
+  box-shadow: 0 48px 0 #1a1816, 0 88px 0 #1a1816;
+}
+
+.phone-shell::after {
+  content: '';
+  position: absolute;
+  right: -14px;
+  top: 160px;
+  width: 3px;
+  height: 76px;
+  background: linear-gradient(180deg, #2a2826, #1a1816);
+  border-radius: 0 2px 2px 0;
+}
+
+/* ==========================================
+   DYNAMIC ISLAND
+   ========================================== */
+.dynamic-island {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  border-radius: var(--island-radius);
+  z-index: 100;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.8);
+  transform-origin: center top;
+}
+
+/* ==========================================
+   STATUS BAR
+   ========================================== */
+.status-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 54px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 28px 10px;
+  justify-content: space-between;
+  z-index: 90;
+  pointer-events: none;
+}
+
+/* ==========================================
+   LOCK SCREEN
+   ========================================== */
+.lock-screen-bg {
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(201, 168, 76, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(201, 168, 76, 0.03) 0%, transparent 50%),
+    linear-gradient(180deg, #06060a 0%, #080810 30%, #050508 60%, #050505 100%);
+}
+
+.lock-grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201, 168, 76, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 40%, black 20%, transparent 75%);
+}
+
+/* ==========================================
+   NOTIFICATION BANNER
+   ========================================== */
+.notif-banner {
+  background: rgba(28, 28, 30, 0.85);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+}
+
+/* ==========================================
+   HOME SCREEN
+   ========================================== */
+.home-wallpaper {
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 0%, rgba(201, 168, 76, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 80% at 80% 80%, rgba(201, 168, 76, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 60% at 10% 60%, rgba(232, 160, 176, 0.02) 0%, transparent 50%),
+    linear-gradient(180deg, #060609 0%, #050508 50%, #040406 100%);
+}
+
+/* App icon press state */
+.app-icon-wrap {
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app-icon-wrap:active {
+  transform: scale(0.88);
+}
+
+/* ==========================================
+   DOCK
+   ========================================== */
+.dock-blur {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================
+   APP SCREENS
+   ========================================== */
+.app-topbar-blur {
+  background: rgba(5, 5, 8, 0.85);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ==========================================
+   MUSIC APP
+   ========================================== */
+.music-bg {
+  background: linear-gradient(180deg, #0d0500 0%, #080503 30%, #050505 70%);
+}
+
+.album-art-shadow {
+  box-shadow:
+    0 32px 64px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(201, 168, 76, 0.1),
+    0 0 40px rgba(201, 168, 76, 0.08);
+}
+
+.progress-track {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  overflow: visible;
+  position: relative;
+  cursor: pointer;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 4px;
+  position: relative;
+  transition: width 0.1s linear;
+}
+
+.progress-thumb {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* ==========================================
+   TRACK LIST ROWS
+   ========================================== */
+.track-row {
+  transition: background 0.2s ease;
+}
+
+.track-row:active {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ==========================================
+   MESSAGES
+   ========================================== */
+.chat-bubble-in {
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.chat-bubble-out {
+  background: var(--gold);
+}
+
+/* ==========================================
+   LINKS
+   ========================================== */
+.link-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: all 0.2s ease;
+}
+
+.link-item:active {
+  background: rgba(201, 168, 76, 0.1);
+  border-color: rgba(201, 168, 76, 0.25);
+  transform: scale(0.98);
+}
+
+/* ==========================================
+   STORE
+   ========================================== */
+.store-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: all 0.2s ease;
+}
+
+.store-card:active {
+  transform: scale(0.96);
+  border-color: rgba(201, 168, 76, 0.2);
+}
+
+/* ==========================================
+   DESKTOP ENVIRONMENT (behind phone)
+   ========================================== */
+.desktop-env {
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 50%, rgba(201, 168, 76, 0.025) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 70% 50%, rgba(201, 168, 76, 0.015) 0%, transparent 60%),
+    linear-gradient(180deg, #030303 0%, #050505 100%);
+}
+
+/* Home indicator */
+.home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  z-index: 200;
+}
+
+/* ==========================================
+   UTILITY CLASSES
+   ========================================== */
+.text-gold { color: var(--gold); }
+.text-gold-light { color: var(--gold-light); }
+.border-gold { border-color: var(--border-gold); }
+.bg-gold-dim { background-color: var(--gold-dim); }
+
+.font-display { font-family: 'Bebas Neue', sans-serif; }
+.font-serif  { font-family: 'Cormorant Garamond', serif; }
+.font-mono   { font-family: 'DM Mono', monospace; }
+.font-sans   { font-family: 'DM Sans', sans-serif; }
+
+.blur-backdrop {
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+}
+
+/* Touch-action for swipe gestures */
+.swipe-target { touch-action: none; }
+
+/* EQ bars */
+.eq-bar {
+  width: 3px;
+  background: linear-gradient(0deg, var(--gold), var(--gold-light));
+  border-radius: 2px;
+  animation: eqBounce 0.6s ease-in-out infinite alternate;
+  box-shadow: 0 0 6px rgba(201, 168, 76, 0.3);
+}
+
+@keyframes eqBounce {
+  from { transform: scaleY(0.2); }
+  to   { transform: scaleY(1); }
+}
+
+/* Blink cursor */
+.blink {
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Gold shimmer on text */
+.gold-shimmer {
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--gold-dark));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer {
+  from { background-position: 0% center; }
+  to   { background-position: 200% center; }
+}
+
+/* Responsive */
+@media (max-width: 430px) {
+  :root {
+    --phone-w: 100vw;
+    --phone-h: 100dvh;
+    --phone-radius: 0px;
+  }
+  .phone-shell {
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .phone-shell::before,
+  .phone-shell::after { display: none; }
+}
+
+@media (max-height: 900px) and (min-width: 431px) {
+  :root {
+    --phone-h: min(852px, 95vh);
+    --phone-w: calc(var(--phone-h) * 393 / 852);
+  }
+}
