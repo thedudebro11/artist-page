@@ -77,8 +77,8 @@ export function MessagesApp() {
                   }}>{thread.emoji}</div>
 
                   <div style={{ flex: 1, overflow: 'hidden' }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{thread.name}</div>
-                    <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 3 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{thread.name}</div>
+                    <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 3, lineHeight: 1.2 }}>
                       {thread.preview}
                     </div>
                   </div>
@@ -249,8 +249,8 @@ export function ConnectApp() {
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15)',
               }}>{link.icon}</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{link.label}</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>{link.sub}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{link.label}</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 2, lineHeight: 1.2 }}>{link.sub}</div>
               </div>
               <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 18 }}>›</span>
             </motion.a>
@@ -368,8 +368,8 @@ export function StoreApp() {
                 {item.emoji}
               </div>
               <div style={{ padding: '11px 13px 13px' }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: '#fff' }}>{item.name}</div>
-                <div style={{ fontSize: 11, color: 'var(--gold)', marginTop: 3, letterSpacing: 0.3 }}>{item.price}</div>
+                <div style={{ fontSize: 12.5, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{item.name}</div>
+                <div style={{ fontSize: 11, color: 'var(--gold)', marginTop: 3, letterSpacing: 0.3, lineHeight: 1.2 }}>{item.price}</div>
               </div>
             </motion.div>
           ))}
@@ -523,8 +523,8 @@ export function VideosApp() {
 
             {/* Info */}
             <div style={{ padding: '12px 14px 14px' }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{vid.title}</div>
-              <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.38)', marginTop: 3 }}>{vid.sub}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{vid.title}</div>
+              <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.38)', marginTop: 3, lineHeight: 1.2 }}>{vid.sub}</div>
             </div>
           </motion.a>
         ))}

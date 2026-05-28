@@ -108,13 +108,13 @@ export default function LockScreen() {
             fontSize: 18, flexShrink: 0
           }}>👑</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.3px', textTransform: 'uppercase', marginBottom: 3 }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.3px', textTransform: 'uppercase', marginBottom: 3, lineHeight: 1.2 }}>
               Official Tyse · now
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 3 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 3, lineHeight: 1.2 }}>
               New Drop @ 9 PM
             </div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.2 }}>
               Tap to listen 🔥
             </div>
           </div>

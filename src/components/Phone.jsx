@@ -65,7 +65,7 @@ export default function Phone() {
   const ActiveApp = activeApp ? APP_MAP[activeApp] : null
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block', lineHeight: 0 }}>
+    <div style={{ position: 'relative', display: 'inline-block', verticalAlign: 'top' }}>
 
       {/* Left: silent switch + vol up + vol down */}
       <PhoneButton side="left" top={108} height={18} />

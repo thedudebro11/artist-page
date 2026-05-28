@@ -258,10 +258,10 @@ export default function MusicApp() {
                 {i === currentTrack && isPlaying ? <EQMini /> : String(i + 1).padStart(2, '0')}
               </span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 500, color: i === currentTrack ? 'var(--gold-light)' : '#fff' }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: i === currentTrack ? 'var(--gold-light)' : '#fff', lineHeight: 1.2 }}>
                   {t.title}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2, lineHeight: 1.2 }}>
                   {t.artist}
                 </div>
               </div>

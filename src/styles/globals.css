@@ -72,6 +72,12 @@ html, body, #root {
   background: #000;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
   color: var(--text-primary);
+  line-height: 1.35;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  line-height: normal;
 }
 
 /* Scrollbars */
