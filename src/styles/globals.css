@@ -5,6 +5,7 @@
 @tailwind utilities;
 
 :root {
+  /* Brand palette */
   --gold: #c9a84c;
   --gold-light: #e8c97a;
   --gold-dark: #8a6020;
@@ -14,8 +15,8 @@
   --deep: #0d0d0d;
   --surface: #1a1a1a;
   --surface2: #222222;
-  --text: #f0ece4;
-  --muted: #6b6460;
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.28);
   --border: rgba(255, 255, 255, 0.08);
   --border-gold: rgba(201, 168, 76, 0.2);
 
@@ -24,6 +25,35 @@
   --phone-h: 852px;
   --phone-radius: 55px;
   --island-radius: 20px;
+
+  /* Glassmorphism System */
+  --glass: rgba(255, 255, 255, 0.07);
+  --glass-light: rgba(255, 255, 255, 0.11);
+  --glass-deep: rgba(0, 0, 0, 0.44);
+  --glass-gold: rgba(201, 168, 76, 0.08);
+  --blur-sm: blur(16px) saturate(1.8);
+  --blur-md: blur(28px) saturate(2);
+  --blur-lg: blur(40px) saturate(2.2);
+  --border-subtle: 1px solid rgba(255, 255, 255, 0.09);
+  --border-light: 1px solid rgba(255, 255, 255, 0.14);
+  --glass-shadow: inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.18);
+  --glass-shadow-sm: inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 16px rgba(0,0,0,0.28);
+
+  /* iOS Text Hierarchy */
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-tertiary: rgba(255, 255, 255, 0.28);
+
+  /* iOS Radius Scale */
+  --radius-icon-sm: 7px;
+  --radius-icon-md: 11px;
+  --radius-icon-lg: 15px;
+  --radius-card: 18px;
+  --radius-sheet: 20px;
+  --radius-alert: 14px;
+
+  /* iOS Spring for CSS transitions */
+  --ios-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 * {
@@ -40,8 +70,8 @@ html, body, #root {
   height: 100%;
   overflow: hidden;
   background: #000;
-  font-family: 'DM Sans', sans-serif;
-  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  color: var(--text-primary);
 }
 
 /* Scrollbars */
@@ -88,43 +118,34 @@ html, body, #root {
   width: var(--phone-w);
   height: var(--phone-h);
   border-radius: var(--phone-radius);
-  background: linear-gradient(160deg, #2a2826 0%, #111110 50%, #1a1917 100%);
+  background: linear-gradient(158deg,
+    #3e3c3a 0%, #252321 18%, #0e0d0c 45%, #1c1a18 72%, #2f2d2b 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 240, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.8),
-    inset 1px 0 0 rgba(255, 255, 240, 0.06),
-    inset -1px 0 0 rgba(255, 255, 240, 0.06),
-    0 0 0 1px rgba(255, 255, 255, 0.12),
-    0 0 0 12px #1c1c1e,
-    0 0 0 13px rgba(255, 255, 255, 0.06),
-    0 80px 160px rgba(0, 0, 0, 0.95),
-    0 0 0 14px rgba(0,0,0,0.3),
-    0 0 100px rgba(201, 168, 76, 0.05);
+    inset 0 0 0 1px rgba(255,255,255,0.07),
+    inset 0 0 28px rgba(0,0,0,0.55),
+    inset 0 2px 0 rgba(255,255,255,0.13),
+    inset 0 -1px 0 rgba(0,0,0,0.85),
+    0 0 0 1px rgba(255,255,255,0.16),
+    0 0 0 2px rgba(0,0,0,0.7),
+    0 0 0 12px #1a1817,
+    0 0 0 12.5px rgba(255,255,255,0.09),
+    0 0 0 13.5px rgba(0,0,0,0.5),
+    0 60px 130px rgba(0,0,0,0.92),
+    0 20px 50px rgba(0,0,0,0.65),
+    0 0 90px rgba(201,168,76,0.08);
   overflow: hidden;
 }
 
-/* Side buttons */
-.phone-shell::before {
-  content: '';
-  position: absolute;
-  left: -14px;
-  top: 120px;
-  width: 3px;
-  height: 32px;
-  background: linear-gradient(180deg, #2a2826, #1a1816);
-  border-radius: 2px 0 0 2px;
-  box-shadow: 0 48px 0 #1a1816, 0 88px 0 #1a1816;
-}
-
-.phone-shell::after {
-  content: '';
-  position: absolute;
-  right: -14px;
-  top: 160px;
-  width: 3px;
-  height: 76px;
-  background: linear-gradient(180deg, #2a2826, #1a1816);
-  border-radius: 0 2px 2px 0;
+/* ==========================================
+   LIQUID GLASS UTILITY  (floating panels)
+   ========================================== */
+.liquid-glass {
+  background: var(--glass);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: var(--border-subtle);
+  border-radius: var(--radius-card);
+  box-shadow: var(--glass-shadow);
 }
 
 /* ==========================================
@@ -179,14 +200,19 @@ html, body, #root {
 }
 
 /* ==========================================
-   NOTIFICATION BANNER
+   NOTIFICATION BANNER  (layer 3 — floating)
    ========================================== */
 .notif-banner {
-  background: rgba(28, 28, 30, 0.85);
-  backdrop-filter: blur(24px) saturate(1.8);
-  -webkit-backdrop-filter: blur(24px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(36px) saturate(2.2);
+  -webkit-backdrop-filter: blur(36px) saturate(2.2);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-card);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    inset 0 -1px 0 rgba(0,0,0,0.06),
+    0 12px 48px rgba(0,0,0,0.5),
+    0 4px 12px rgba(0,0,0,0.3);
 }
 
 /* ==========================================
@@ -202,7 +228,8 @@ html, body, #root {
 
 /* App icon press state */
 .app-icon-wrap {
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.15s var(--ios-spring);
+  user-select: none;
 }
 
 .app-icon-wrap:active {
@@ -210,23 +237,32 @@ html, body, #root {
 }
 
 /* ==========================================
-   DOCK
+   DOCK  (layer 2 — lighter glass)
    ========================================== */
 .dock-blur {
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(36px) saturate(2.2);
+  -webkit-backdrop-filter: blur(36px) saturate(2.2);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    inset 0 -1px 0 rgba(0,0,0,0.08),
+    0 12px 48px rgba(0,0,0,0.55),
+    0 4px 16px rgba(0,0,0,0.3);
 }
 
 /* ==========================================
-   APP SCREENS
+   APP SCREENS — top bar  (deep glass)
    ========================================== */
 .app-topbar-blur {
-  background: rgba(5, 5, 8, 0.85);
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(40px) saturate(2);
+  -webkit-backdrop-filter: blur(40px) saturate(2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 -1px 0 rgba(255,255,255,0.04),
+    0 1px 0 rgba(255,255,255,0.03),
+    0 4px 24px rgba(0,0,0,0.25);
 }
 
 /* ==========================================
@@ -243,9 +279,10 @@ html, body, #root {
     0 0 40px rgba(201, 168, 76, 0.08);
 }
 
+/* iOS-spec scrubber track */
 .progress-track {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 2px;
   overflow: visible;
   position: relative;
   cursor: pointer;
@@ -253,32 +290,34 @@ html, body, #root {
 
 .progress-fill {
   background: linear-gradient(90deg, var(--gold), var(--gold-light));
-  border-radius: 4px;
+  border-radius: 2px;
   position: relative;
   transition: width 0.1s linear;
 }
 
+/* iOS-spec thumb: 22px */
 .progress-thumb {
   position: absolute;
-  right: -6px;
+  right: -11px;
   top: 50%;
   transform: translateY(-50%);
-  width: 12px;
-  height: 12px;
+  width: 22px;
+  height: 22px;
   background: #fff;
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 /* ==========================================
    TRACK LIST ROWS
    ========================================== */
 .track-row {
-  transition: background 0.2s ease;
+  transition: background 0.12s ease;
+  user-select: none;
 }
 
 .track-row:active {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* ==========================================
@@ -286,7 +325,12 @@ html, body, #root {
    ========================================== */
 .chat-bubble-in {
   background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    0 2px 8px rgba(0,0,0,0.2);
 }
 
 .chat-bubble-out {
@@ -294,32 +338,45 @@ html, body, #root {
 }
 
 /* ==========================================
-   LINKS
+   LINKS  (iOS list rows)
    ========================================== */
 .link-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    0 4px 16px rgba(0,0,0,0.22);
+  transition: all 0.15s var(--ios-spring);
 }
 
 .link-item:active {
-  background: rgba(201, 168, 76, 0.1);
-  border-color: rgba(201, 168, 76, 0.25);
-  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.11);
+  transform: scale(0.97);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.20),
+    0 2px 8px rgba(0,0,0,0.18);
 }
 
 /* ==========================================
-   STORE
+   STORE  (content cards)
    ========================================== */
 .store-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 4px 20px rgba(0,0,0,0.3);
+  transition: transform 0.15s var(--ios-spring);
 }
 
 .store-card:active {
-  transform: scale(0.96);
-  border-color: rgba(201, 168, 76, 0.2);
+  transform: scale(0.95);
 }
 
 /* ==========================================
@@ -353,14 +410,16 @@ html, body, #root {
 .border-gold { border-color: var(--border-gold); }
 .bg-gold-dim { background-color: var(--gold-dim); }
 
+/* Brand fonts — use for display/editorial copy only */
 .font-display { font-family: 'Bebas Neue', sans-serif; }
 .font-serif  { font-family: 'Cormorant Garamond', serif; }
 .font-mono   { font-family: 'DM Mono', monospace; }
-.font-sans   { font-family: 'DM Sans', sans-serif; }
+/* System font for all UI chrome */
+.font-ui { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; }
 
 .blur-backdrop {
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
 }
 
 /* Touch-action for swipe gestures */

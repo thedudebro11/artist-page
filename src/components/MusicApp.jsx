@@ -261,7 +261,7 @@ export default function MusicApp() {
                 <div style={{ fontSize: 14, fontWeight: 500, color: i === currentTrack ? 'var(--gold-light)' : '#fff' }}>
                   {t.title}
                 </div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
                   {t.artist}
                 </div>
               </div>

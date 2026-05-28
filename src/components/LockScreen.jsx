@@ -57,14 +57,14 @@ export default function LockScreen() {
           style={{
             width: '100%', height: '100%',
             objectFit: 'cover', objectPosition: 'center 10%',
-            filter: 'brightness(0.48) contrast(1.1)',
+            filter: 'brightness(0.58) contrast(1.05)',
             display: 'block', userSelect: 'none',
           }}
         />
         {/* Gradient overlay — keeps top & bottom dark for status bar + swipe hint */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.45) 70%, rgba(0,0,0,0.88) 100%)',
+          background: 'linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.05) 20%, rgba(0,0,0,0.0) 45%, rgba(0,0,0,0.35) 70%, rgba(0,0,0,0.82) 100%)',
         }} />
         {/* Subtle gold bloom at bottom */}
         <div style={{
@@ -106,16 +106,16 @@ export default function LockScreen() {
             borderRadius: 8,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 18, flexShrink: 0
-          }}>🎵</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: 2 }}>
+          }}>👑</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.3px', textTransform: 'uppercase', marginBottom: 3 }}>
               Official Tyse · now
             </div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 2 }}>
-              New Drop @ 9 PM 🔥
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 3 }}>
+              New Drop @ 9 PM
             </div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>
-              Main Character is in session. Tap to listen.
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
+              Tap to listen 🔥
             </div>
           </div>
         </div>
@@ -173,24 +173,30 @@ export default function LockScreen() {
 
       {/* Bottom swipe area */}
       <motion.div
-        animate={hint ? { opacity: [0.4, 0.7, 0.4] } : { opacity: 0 }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        animate={hint ? { opacity: [0.5, 0.85, 0.5] } : { opacity: 0 }}
+        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
         style={{
           position: 'absolute',
-          bottom: 48,
+          bottom: 36,
           left: 0, right: 0,
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: 14,
+          gap: 12,
           pointerEvents: 'none'
         }}
       >
-        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', letterSpacing: 0.3 }}>
+        <span style={{
+          fontSize: 12, color: 'rgba(255,255,255,0.5)',
+          letterSpacing: 0.8, fontFamily: 'DM Sans', fontWeight: 400,
+        }}>
           swipe up to unlock
         </span>
+        {/* Liquid glass pill */}
         <div style={{
-          width: 134, height: 5,
-          background: 'rgba(255,255,255,0.3)',
-          borderRadius: 3
+          width: 134, height: 5, borderRadius: 3,
+          background: 'rgba(255,255,255,0.25)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 4px rgba(0,0,0,0.4)',
         }} />
       </motion.div>
     </motion.div>

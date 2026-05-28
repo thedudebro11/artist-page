@@ -11,7 +11,7 @@ export default function AppShell({ title, children, bg = '#050505' }) {
     <motion.div
       key="app"
       initial={{ y: '100%', borderRadius: '54px' }}
-      animate={{ y: 0, borderRadius: '54px' }}
+      animate={{ y: 0, borderRadius: '0px' }}
       exit={{ y: '100%', borderRadius: '54px' }}
       transition={{ type: 'spring', stiffness: 320, damping: 34 }}
       style={{
@@ -44,14 +44,15 @@ export default function AppShell({ title, children, bg = '#050505' }) {
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
             color: 'var(--gold)',
-            fontSize: 13, fontWeight: 500,
-            display: 'flex', alignItems: 'center', gap: 4,
-            fontFamily: 'DM Sans'
+            fontSize: 17, fontWeight: 400,
+            display: 'flex', alignItems: 'center', gap: 2,
+            letterSpacing: -0.1,
+            userSelect: 'none',
           }}
         >
           ‹ Home
         </motion.button>
-        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', letterSpacing: 0.3 }}>
+        <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: -0.1 }}>
           {title}
         </span>
       </div>

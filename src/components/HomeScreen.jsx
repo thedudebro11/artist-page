@@ -4,12 +4,12 @@ import StatusBar from './StatusBar'
 import DynamicIsland from './DynamicIsland'
 
 const APPS = [
-  { id: 'music',    label: 'Music',    emoji: '🎵', gradient: 'linear-gradient(145deg, #1a0d00, #3d2000)' },
-  { id: 'videos',   label: 'Videos',   emoji: '🎬', gradient: 'linear-gradient(145deg, #0d0d22, #1a1a44)' },
-  { id: 'gallery',  label: 'Gallery',  emoji: '📸', gradient: 'linear-gradient(145deg, #0d1a0d, #1a3020)' },
-  { id: 'messages', label: 'Messages', emoji: '💬', gradient: 'linear-gradient(145deg, #001a10, #003a20)' },
-  { id: 'store',    label: 'Store',    emoji: '🛍️', gradient: 'linear-gradient(145deg, #1a001a, #36003a)' },
-  { id: 'connect',  label: 'Connect',  emoji: '🔗', gradient: 'linear-gradient(145deg, #1a0a00, #3a1800)' },
+  { id: 'music',    label: 'Music',    emoji: '🎵', gradient: 'linear-gradient(145deg, #c9200d, #f0491a)' },
+  { id: 'videos',   label: 'Videos',   emoji: '▶',  gradient: 'linear-gradient(145deg, #1c1c1e, #3a3a3c)' },
+  { id: 'gallery',  label: 'Gallery',  emoji: '📸', gradient: 'linear-gradient(145deg, #1d6fa4, #1fa2c0)' },
+  { id: 'messages', label: 'Messages', emoji: '💬', gradient: 'linear-gradient(145deg, #1a8a38, #30d158)' },
+  { id: 'store',    label: 'Store',    emoji: '🛍️', gradient: 'linear-gradient(145deg, #4a35b0, #9b59f5)' },
+  { id: 'connect',  label: 'Connect',  emoji: '🔗', gradient: 'linear-gradient(145deg, #0a5eb8, #0a84ff)' },
 ]
 
 const DOCK_APPS = ['music', 'messages', 'store', 'connect']
@@ -56,13 +56,13 @@ export default function HomeScreen() {
           style={{
             width: '100%', height: '100%',
             objectFit: 'cover', objectPosition: 'center 10%',
-            filter: 'brightness(0.28) contrast(1.12) saturate(0.7)',
+            filter: 'brightness(0.42) contrast(1.05) saturate(0.9)',
             display: 'block', userSelect: 'none',
           }}
         />
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.35) 40%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.88) 100%)',
+          background: 'linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.35) 70%, rgba(0,0,0,0.82) 100%)',
         }} />
         <div style={{
           position: 'absolute', inset: 0,
@@ -171,7 +171,7 @@ function AppIcon({ app, onPress }) {
       <motion.div
         style={{
           width: 72, height: 72,
-          borderRadius: 18,
+          borderRadius: 15,
           background: app.gradient,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 30,
@@ -180,15 +180,18 @@ function AppIcon({ app, onPress }) {
         }}
         whileHover={{ boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(201,168,76,0.1)' }}
       >
-        {/* Glass sheen */}
+        {/* Glass sheen layers */}
         <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 50%)',
-          borderRadius: 'inherit'
+          position: 'absolute', inset: 0, borderRadius: 'inherit',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 45%, transparent 70%)',
+        }} />
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: 'inherit',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.15)',
         }} />
         {app.emoji}
       </motion.div>
-      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.72)', textAlign: 'center', letterSpacing: 0.2 }}>
+      <span style={{ fontSize: 11, color: 'var(--text-secondary)', textAlign: 'center', letterSpacing: 0.2 }}>
         {app.label}
       </span>
     </motion.div>
