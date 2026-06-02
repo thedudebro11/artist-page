@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePhoneStore, LINKS, VIDEOS } from '../store/phoneStore'
 import AppShell from './AppShell'
@@ -21,176 +21,290 @@ const G = {
   },
 }
 
+const inputStyle = {
+  background: 'rgba(255,255,255,0.07)',
+  border: '1px solid rgba(255,255,255,0.11)',
+  borderRadius: 10,
+  padding: '9px 12px',
+  color: '#fff',
+  fontSize: 13,
+  outline: 'none',
+  fontFamily: 'DM Sans',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+  display: 'block',
+  width: '100%',
+  boxSizing: 'border-box',
+}
+
+const MOODS = ['vibing', 'emotional', 'hype', 'grateful', 'nostalgic']
+const MOOD_COLORS = {
+  vibing:    'rgba(201,168,76,0.22)',
+  emotional: 'rgba(140,60,210,0.22)',
+  hype:      'rgba(255,55,55,0.22)',
+  grateful:  'rgba(30,200,100,0.22)',
+  nostalgic: 'rgba(60,120,255,0.22)',
+}
+
+function MoodPill({ mood, selected, onClick }) {
+  return (
+    <motion.button
+      whileTap={{ scale: 0.92 }}
+      onClick={onClick}
+      style={{
+        background: selected ? MOOD_COLORS[mood] : 'rgba(255,255,255,0.05)',
+        border: `1px solid ${selected ? 'rgba(255,255,255,0.26)' : 'rgba(255,255,255,0.09)'}`,
+        borderRadius: 20, padding: '5px 12px',
+        color: selected ? '#fff' : 'rgba(255,255,255,0.42)',
+        fontSize: 12, fontFamily: 'DM Sans',
+        fontWeight: selected ? 600 : 400,
+        cursor: 'pointer',
+      }}
+    >
+      {mood}
+    </motion.button>
+  )
+}
+
+function FanNoteCard({ note }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      style={{ ...G.card, borderRadius: 16, padding: '13px 15px', marginBottom: 8 }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 7 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+          <div style={{
+            width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+            background: 'linear-gradient(135deg, var(--gold), #4a2800)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 12, fontWeight: 700, color: '#000',
+          }}>{note.name[0].toUpperCase()}</div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{note.name}</div>
+            <div style={{ fontSize: 11, color: 'var(--gold)', lineHeight: 1.2 }}>{note.song}</div>
+          </div>
+        </div>
+        <div style={{
+          background: MOOD_COLORS[note.mood] || 'rgba(255,255,255,0.07)',
+          border: '1px solid rgba(255,255,255,0.14)',
+          borderRadius: 10, padding: '2px 8px',
+          fontSize: 10, color: 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap',
+        }}>{note.mood}</div>
+      </div>
+      <div style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.72)', lineHeight: 1.5 }}>{note.message}</div>
+      <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.22)', marginTop: 7, textAlign: 'right' }}>{note.ts}</div>
+    </motion.div>
+  )
+}
+
 /* ============================================================
-   MESSAGES APP
+   9 PM NOTES APP
    ============================================================ */
 export function MessagesApp() {
-  const { messages, addMessage } = usePhoneStore()
-  const [chatView, setChatView] = useState(false)
-  const [input, setInput] = useState('')
-  const scrollRef = useRef(null)
+  const { artistNotes, fanNotes, pinnedNotes, addFanNote } = usePhoneStore()
+  const [tab, setTab] = useState('artist')
+  const [name, setName] = useState('')
+  const [song, setSong] = useState('')
+  const [mood, setMood] = useState('')
+  const [msg, setMsg] = useState('')
+  const [sent, setSent] = useState(false)
 
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-  }, [messages])
-
-  const send = () => {
-    if (!input.trim()) return
-    addMessage(input.trim())
-    setInput('')
+  const handleSubmit = () => {
+    if (!name.trim() || !msg.trim() || !mood) return
+    addFanNote({ name: name.trim(), song: song.trim() || 'General', mood, message: msg.trim() })
+    setName(''); setSong(''); setMood(''); setMsg('')
+    setSent(true)
+    setTimeout(() => setSent(false), 3000)
   }
 
-  const threads = [
-    { name: 'Official Tyse', preview: 'New record just dropped. Holiday.', time: '9:00 PM', badge: 1, emoji: '👑' },
-    { name: 'New Music Alert', preview: 'Holiday is now streaming everywhere 🎶', time: '9:01 PM', badge: 1, emoji: '🎵' },
-    { name: 'Tour Dates', preview: 'Stay locked in. Dates dropping soon.', time: '8:45 PM', badge: 0, emoji: '📍' },
+  const TABS = [
+    { key: 'artist', label: 'Artist' },
+    { key: 'fans',   label: 'Fans'   },
+    { key: 'pinned', label: 'Pinned' },
   ]
 
   return (
-    <AppShell title="Messages" bg="linear-gradient(180deg,#020205 0%,#050505 100%)">
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <AnimatePresence mode="wait">
-          {!chatView ? (
-            <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, x: -60 }}
-              style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {threads.map((thread, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.08 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setChatView(true)}
-                  style={{
-                    ...G.card,
-                    display: 'flex', alignItems: 'center', gap: 13,
-                    padding: '13px 14px', borderRadius: 18, cursor: 'pointer',
-                  }}
-                >
-                  {/* Avatar */}
-                  <div style={{
-                    width: 48, height: 48, borderRadius: '50%', flexShrink: 0,
-                    background: 'linear-gradient(135deg, var(--gold), #4a2800)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 20,
-                    boxShadow: '0 0 0 2px rgba(201,168,76,0.3), 0 4px 12px rgba(0,0,0,0.4)',
-                  }}>{thread.emoji}</div>
+    <AppShell title="9 PM Notes" bg="linear-gradient(180deg,#020205 0%,#050505 100%)">
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-                  <div style={{ flex: 1, overflow: 'hidden' }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{thread.name}</div>
-                    <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 3, lineHeight: 1.2 }}>
-                      {thread.preview}
-                    </div>
-                  </div>
-
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)' }}>{thread.time}</div>
-                    {thread.badge > 0 && (
-                      <div style={{
-                        marginTop: 5, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                        width: 18, height: 18, borderRadius: '50%',
-                        background: 'var(--gold)', fontSize: 10, fontWeight: 700, color: '#000',
-                      }}>{thread.badge}</div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="chat"
-              initial={{ x: 60, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 60, opacity: 0 }}
-              style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+        {/* Tab bar */}
+        <div style={{
+          display: 'flex', gap: 6,
+          padding: '10px 14px 8px',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          flexShrink: 0,
+        }}>
+          {TABS.map(({ key, label }) => (
+            <motion.button
+              key={key}
+              whileTap={{ scale: 0.94 }}
+              onClick={() => setTab(key)}
+              style={{
+                flex: 1, padding: '7px 0', borderRadius: 10, border: 'none',
+                background: tab === key ? 'rgba(201,168,76,0.15)' : 'rgba(255,255,255,0.05)',
+                color: tab === key ? 'var(--gold)' : 'rgba(255,255,255,0.42)',
+                fontSize: 12.5, fontFamily: 'DM Sans', fontWeight: tab === key ? 700 : 400,
+                cursor: 'pointer',
+              }}
             >
-              {/* Chat header */}
-              <div style={{
-                padding: '8px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.07)',
-                display: 'flex', alignItems: 'center', gap: 12,
-                background: 'rgba(0,0,0,0.15)',
-              }}>
-                <motion.button whileTap={{ scale: 0.9 }} onClick={() => setChatView(false)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gold)', fontSize: 20 }}>‹</motion.button>
-                <div style={{
-                  width: 36, height: 36, borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--gold), #4a2800)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
-                  boxShadow: '0 0 0 2px rgba(201,168,76,0.25)',
-                }}>👑</div>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>Official Tyse</div>
-                  <div style={{ fontSize: 11, color: 'var(--gold)' }}>Active now</div>
-                </div>
-              </div>
+              {label}
+            </motion.button>
+          ))}
+        </div>
 
-              {/* Messages */}
-              <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '14px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {messages.map((msg) => (
+        {/* Tab content */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '10px 14px 24px' }}>
+          <AnimatePresence mode="wait">
+
+            {/* ── ARTIST TAB ── */}
+            {tab === 'artist' && (
+              <motion.div key="artist"
+                initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                   <motion.div
-                    key={msg.id}
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                    style={{ alignSelf: msg.from === 'tyse' ? 'flex-start' : 'flex-end', maxWidth: '78%' }}
+                    animate={{ boxShadow: ['0 0 16px rgba(201,168,76,0.2)', '0 0 28px rgba(201,168,76,0.4)', '0 0 16px rgba(201,168,76,0.2)'] }}
+                    transition={{ duration: 2.5, repeat: Infinity }}
+                    style={{
+                      width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
+                      background: 'linear-gradient(135deg, var(--gold), #3a2000)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+                    }}
+                  >👑</motion.div>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>Official Tyse</div>
+                    <div style={{ fontSize: 11, color: 'var(--gold)', lineHeight: 1.2 }}>9 PM Broadcast · Active</div>
+                  </div>
+                </div>
+
+                {artistNotes.map((note, i) => (
+                  <motion.div
+                    key={note.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.07 }}
+                    style={{ ...G.cardGold, borderRadius: 16, padding: '14px 16px', marginBottom: 10 }}
                   >
-                    <div
-                      className={msg.from === 'tyse' ? 'chat-bubble-in' : 'chat-bubble-out'}
-                      style={{
-                        padding: '10px 14px',
-                        borderRadius: msg.from === 'tyse' ? '18px 18px 18px 4px' : '18px 18px 4px 18px',
-                        fontSize: 14, lineHeight: 1.5,
-                        color: msg.from === 'tyse' ? '#fff' : '#000',
-                      }}
-                    >
-                      {msg.text}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3, textAlign: msg.from === 'tyse' ? 'left' : 'right', padding: '0 4px' }}>
-                      {msg.time}
+                    <div style={{ fontSize: 14, color: '#fff', lineHeight: 1.5 }}>{note.text}</div>
+                    <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.28)', marginTop: 8, display: 'flex', justifyContent: 'space-between' }}>
+                      <span>{note.date}</span><span>{note.time}</span>
                     </div>
                   </motion.div>
                 ))}
-              </div>
+              </motion.div>
+            )}
 
-              {/* Input */}
-              <div style={{ padding: '10px 12px 20px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', gap: 8, alignItems: 'center', background: 'rgba(0,0,0,0.12)' }}>
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && send()}
-                  placeholder="Message Official Tyse..."
-                  style={{
-                    flex: 1,
-                    background: 'rgba(255,255,255,0.07)',
-                    border: '1px solid rgba(255,255,255,0.11)',
-                    borderRadius: 22, padding: '10px 16px',
-                    color: '#fff', fontSize: 14, outline: 'none',
-                    fontFamily: 'DM Sans',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
-                  }}
-                />
-                <motion.button whileTap={{ scale: 0.88 }} onClick={send}
-                  style={{
-                    width: 36, height: 36, borderRadius: '50%',
-                    background: 'var(--gold)', border: 'none', cursor: 'pointer',
-                    fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexShrink: 0, boxShadow: '0 0 16px rgba(201,168,76,0.4)',
-                  }}>↑</motion.button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            {/* ── FANS TAB ── */}
+            {tab === 'fans' && (
+              <motion.div key="fans"
+                initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }}
+              >
+                <AnimatePresence mode="wait">
+                  {sent ? (
+                    <motion.div key="sent"
+                      initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                      style={{
+                        ...G.cardGold, borderRadius: 16, padding: '16px',
+                        marginBottom: 14, textAlign: 'center',
+                        color: 'var(--gold)', fontSize: 14, fontWeight: 600,
+                      }}
+                    >
+                      🔥 Note sent. Real ones noticed.
+                    </motion.div>
+                  ) : (
+                    <motion.div key="form"
+                      style={{ ...G.card, borderRadius: 16, padding: '14px', marginBottom: 14 }}
+                    >
+                      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--gold)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>
+                        Leave a Note
+                      </div>
+
+                      <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                        <input
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="Your name"
+                          style={{ ...inputStyle, width: '50%', boxSizing: 'border-box' }}
+                        />
+                        <input
+                          value={song}
+                          onChange={(e) => setSong(e.target.value)}
+                          placeholder="Fav song"
+                          style={{ ...inputStyle, width: '50%', boxSizing: 'border-box' }}
+                        />
+                      </div>
+
+                      <div style={{ marginBottom: 8 }}>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.32)', marginBottom: 6, lineHeight: 1.2 }}>Mood</div>
+                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                          {MOODS.map((m) => (
+                            <MoodPill key={m} mood={m} selected={mood === m} onClick={() => setMood(m)} />
+                          ))}
+                        </div>
+                      </div>
+
+                      <textarea
+                        value={msg}
+                        onChange={(e) => setMsg(e.target.value)}
+                        placeholder="Your message to Tyse..."
+                        rows={3}
+                        style={{ ...inputStyle, borderRadius: 10, resize: 'none', marginBottom: 8 }}
+                      />
+
+                      <motion.button
+                        whileTap={{ scale: 0.94 }}
+                        onClick={handleSubmit}
+                        style={{
+                          width: '100%', padding: '10px 0', border: 'none', borderRadius: 10,
+                          background: (name.trim() && msg.trim() && mood) ? 'var(--gold)' : 'rgba(255,255,255,0.06)',
+                          color: (name.trim() && msg.trim() && mood) ? '#000' : 'rgba(255,255,255,0.28)',
+                          fontSize: 13, fontWeight: 700, fontFamily: 'DM Sans',
+                          letterSpacing: 0.5, cursor: 'pointer',
+                        }}
+                      >
+                        Send Note
+                      </motion.button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.26)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>
+                  Fan Notes
+                </div>
+                {fanNotes.map((note) => <FanNoteCard key={note.id} note={note} />)}
+              </motion.div>
+            )}
+
+            {/* ── PINNED TAB ── */}
+            {tab === 'pinned' && (
+              <motion.div key="pinned"
+                initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <span style={{ fontSize: 18 }}>📌</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>Pinned by Tyse</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.36)', lineHeight: 1.2 }}>These hit different</div>
+                  </div>
+                </div>
+                {pinnedNotes.map((note) => <FanNoteCard key={note.id} note={note} />)}
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+        </div>
       </div>
     </AppShell>
   )
 }
 
 /* ============================================================
-   CONNECT / LINKS APP
+   SOCIALS / LINKS APP
    ============================================================ */
 export function ConnectApp() {
   return (
-    <AppShell title="Connect" bg="linear-gradient(180deg, #0a0600 0%, #050505 55%)">
+    <AppShell title="Socials" bg="linear-gradient(180deg, #0a0600 0%, #050505 55%)">
       <div style={{ height: '100%', overflowY: 'auto', padding: '24px 18px 40px' }}>
 
         {/* Profile glass card */}
@@ -216,7 +330,7 @@ export function ConnectApp() {
             }}
           >👑</motion.div>
           <div style={{ fontFamily: 'Bebas Neue', fontSize: 28, letterSpacing: 3, color: '#fff', lineHeight: 1 }}>Official Tyse</div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 7, letterSpacing: 0.5 }}>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 7, letterSpacing: 0.5, lineHeight: 1.3 }}>
             Artist · @officialtyce
           </div>
         </motion.div>
@@ -264,8 +378,8 @@ export function ConnectApp() {
           transition={{ delay: 0.32 }}
           style={{ ...G.cardGold, borderRadius: 20, padding: '18px 16px' }}
         >
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 4 }}>Stay in the loop</div>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', marginBottom: 14 }}>First access to drops, tour dates, exclusives.</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 4, lineHeight: 1.2 }}>Stay in the loop</div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', marginBottom: 14, lineHeight: 1.4 }}>First access to drops, tour dates, exclusives.</div>
           <EmailSignup />
         </motion.div>
       </div>
@@ -330,7 +444,6 @@ export function StoreApp() {
     <AppShell title="Store" bg="linear-gradient(180deg,#0a0014 0%, #050505 60%)">
       <div style={{ height: '100%', overflowY: 'auto', padding: '16px 18px 40px' }}>
 
-        {/* Gold glass banner */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -341,7 +454,7 @@ export function StoreApp() {
           }}
         >
           <div style={{ fontSize: 24 }}>🔥</div>
-          <div style={{ fontFamily: 'Bebas Neue', fontSize: 22, color: '#fff', letterSpacing: 1.5, marginTop: 6 }}>Drops Coming Soon</div>
+          <div style={{ fontFamily: 'Bebas Neue', fontSize: 22, color: '#fff', letterSpacing: 1.5, marginTop: 6, lineHeight: 1 }}>Drops Coming Soon</div>
           <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.38)', marginTop: 5, lineHeight: 1.5 }}>Official Tyse merch in production. Stay locked in.</div>
         </motion.div>
 
@@ -401,7 +514,6 @@ export function GalleryApp() {
   return (
     <AppShell title="Gallery" bg="#000">
       <div style={{ height: '100%', overflowY: 'auto' }}>
-        {/* Glass header strip */}
         <div style={{
           ...G.card,
           margin: '10px 14px 8px',
@@ -409,8 +521,8 @@ export function GalleryApp() {
           padding: '10px 14px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <div style={{ fontSize: 17, fontWeight: 600, color: '#fff' }}>Recents</div>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>12 items · @officialtyce</div>
+          <div style={{ fontSize: 17, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>Recents</div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.2 }}>12 items · @officialtyce</div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, padding: '0 2px' }}>
@@ -439,95 +551,204 @@ export function GalleryApp() {
 }
 
 /* ============================================================
+   VIDEOS APP — helpers
+   ============================================================ */
+const BADGE_COLORS = {
+  Featured:  { bg: 'rgba(201,168,76,0.90)', text: '#000' },
+  Official:  { bg: 'rgba(255,255,255,0.88)', text: '#000' },
+  Exclusive: { bg: 'rgba(140,50,210,0.85)', text: '#fff' },
+}
+
+function BadgeChip({ badge }) {
+  if (!badge) return null
+  const c = BADGE_COLORS[badge] || { bg: 'rgba(255,255,255,0.18)', text: '#fff' }
+  return (
+    <div style={{
+      display: 'inline-block',
+      background: c.bg, borderRadius: 5,
+      padding: '2px 7px',
+      fontSize: 9.5, fontWeight: 700, color: c.text,
+      letterSpacing: 0.8, textTransform: 'uppercase',
+      fontFamily: 'DM Sans', lineHeight: 1.4,
+    }}>
+      {badge}
+    </div>
+  )
+}
+
+function PlayCircle({ size = 48 }) {
+  const fs = Math.round(size * 0.35)
+  const pl = Math.round(size * 0.06)
+  return (
+    <div style={{ position: 'relative', width: size, height: size, borderRadius: '50%', flexShrink: 0 }}>
+      <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backdropFilter: 'blur(12px) saturate(1.8)', WebkitBackdropFilter: 'blur(12px) saturate(1.8)' }} />
+      <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.32)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.40), 0 4px 16px rgba(0,0,0,0.50)' }} />
+      <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: fs, paddingLeft: pl, color: '#fff' }}>▶</div>
+    </div>
+  )
+}
+
+function FeaturedVideoCard({ vid }) {
+  return (
+    <motion.a
+      href={vid.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.05 }}
+      whileTap={{ scale: 0.985 }}
+      style={{
+        textDecoration: 'none', display: 'block', cursor: 'pointer',
+        borderRadius: 20, overflow: 'hidden',
+        border: '1px solid rgba(201,168,76,0.22)',
+        boxShadow: '0 0 0 1px rgba(201,168,76,0.07), 0 8px 32px rgba(0,0,0,0.55), 0 0 40px rgba(201,168,76,0.05)',
+        position: 'relative', height: 190,
+      }}
+    >
+      <img
+        src={`https://img.youtube.com/vi/${vid.ytId}/hqdefault.jpg`}
+        alt={vid.title}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+      />
+      {/* cinematic gradient — heavy at bottom for text legibility */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.32) 38%, rgba(0,0,0,0.88) 100%)' }} />
+
+      {/* badge + duration */}
+      <div style={{ position: 'absolute', top: 12, left: 12, right: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <BadgeChip badge={vid.badge} />
+        <div style={{
+          backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+          background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 5, padding: '2px 7px',
+          fontSize: 10.5, fontWeight: 600, color: '#fff', fontFamily: 'DM Mono',
+        }}>{vid.dur}</div>
+      </div>
+
+      {/* centered play */}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <PlayCircle size={54} />
+      </div>
+
+      {/* title + meta */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 14px 14px' }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', lineHeight: 1.2, marginBottom: 3 }}>{vid.title}</div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', lineHeight: 1.2 }}>
+          {vid.type} · {vid.year}
+        </div>
+      </div>
+    </motion.a>
+  )
+}
+
+function VideoCard({ vid, index }) {
+  return (
+    <motion.a
+      href={vid.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.08 + index * 0.05 }}
+      whileTap={{ scale: 0.98 }}
+      style={{
+        textDecoration: 'none', display: 'block', cursor: 'pointer',
+        borderRadius: 16, overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.10)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 20px rgba(0,0,0,0.35)',
+        position: 'relative', height: 130,
+      }}
+    >
+      <img
+        src={`https://img.youtube.com/vi/${vid.ytId}/hqdefault.jpg`}
+        alt={vid.title}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+      />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.46) 52%, rgba(0,0,0,0.84) 100%)' }} />
+
+      {vid.badge && (
+        <div style={{ position: 'absolute', top: 10, left: 10 }}>
+          <BadgeChip badge={vid.badge} />
+        </div>
+      )}
+
+      {/* centered play */}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <PlayCircle size={38} />
+      </div>
+
+      {/* bottom: title + meta + duration */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        padding: '0 12px 10px',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
+      }}>
+        <div style={{ minWidth: 0, marginRight: 8 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{vid.title}</div>
+          <div style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.50)', lineHeight: 1.2, marginTop: 1 }}>
+            {vid.type} · {vid.year}
+          </div>
+        </div>
+        <div style={{
+          backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+          background: 'rgba(0,0,0,0.50)', border: '1px solid rgba(255,255,255,0.10)',
+          borderRadius: 4, padding: '2px 6px',
+          fontSize: 10, fontWeight: 600, color: '#fff', fontFamily: 'DM Mono',
+          flexShrink: 0,
+        }}>{vid.dur}</div>
+      </div>
+    </motion.a>
+  )
+}
+
+/* ============================================================
    VIDEOS APP
    ============================================================ */
 export function VideosApp() {
-  const grads = [
-    'linear-gradient(135deg,#1a0d00,#3d2800)',
-    'linear-gradient(135deg,#001020,#002540)',
-    'linear-gradient(135deg,#100020,#300040)',
-    'linear-gradient(135deg,#001a00,#003020)',
-    'linear-gradient(135deg,#0d0d22,#1a1a44)',
-  ]
+  const [featured, ...rest] = VIDEOS
 
   return (
     <AppShell title="Videos" bg="linear-gradient(180deg,#020205 0%,#050505 100%)">
-      <div style={{ height: '100%', overflowY: 'auto', padding: '14px 14px 40px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {VIDEOS.map((vid, i) => (
-          <motion.a
-            key={vid.id}
-            href={vid.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06 }}
-            whileTap={{ scale: 0.98 }}
-            style={{
-              textDecoration: 'none', display: 'block',
-              ...G.card,
-              borderRadius: 20, overflow: 'hidden', cursor: 'pointer',
-            }}
-          >
-            {/* Thumbnail */}
-            <div style={{ width: '100%', aspectRatio: '16/9', position: 'relative', background: grads[i % grads.length], overflow: 'hidden' }}>
-              <img
-                src={`https://img.youtube.com/vi/${vid.ytId}/hqdefault.jpg`}
-                alt={vid.title}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.22)' }} />
+      <div style={{
+        height: '100%',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y',
+        padding: '12px 14px 48px',
+      }}>
 
-              {/* Glass play button — 21st.dev liquid glass recipe */}
-              <div style={{
-                position: 'absolute', inset: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <div style={{
-                  position: 'relative',
-                  width: 52, height: 52, borderRadius: '50%',
-                }}>
-                  {/* blur layer */}
-                  <div style={{
-                    position: 'absolute', inset: 0, borderRadius: '50%',
-                    backdropFilter: 'blur(12px) saturate(1.8)',
-                    WebkitBackdropFilter: 'blur(12px) saturate(1.8)',
-                  }} />
-                  {/* fill + edge */}
-                  <div style={{
-                    position: 'absolute', inset: 0, borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.14)',
-                    border: '1px solid rgba(255,255,255,0.28)',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 16px rgba(0,0,0,0.45)',
-                  }} />
-                  <div style={{
-                    position: 'absolute', inset: 0, borderRadius: '50%',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 18, paddingLeft: 3, color: '#fff',
-                  }}>▶</div>
-                </div>
-              </div>
+        {/* Vault header */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ marginBottom: 14 }}
+        >
+          <div style={{ fontFamily: 'Bebas Neue', fontSize: 26, color: '#fff', letterSpacing: 2, lineHeight: 1 }}>
+            Video Vault
+          </div>
+          <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.38)', marginTop: 4, lineHeight: 1.3 }}>
+            Official visuals, late-night clips, and moments for the real ones.
+          </div>
+        </motion.div>
 
-              {/* Duration glass pill */}
-              <div style={{
-                position: 'absolute', bottom: 8, right: 10,
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                background: 'rgba(0,0,0,0.55)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: 5,
-                padding: '2px 7px', fontSize: 11, fontWeight: 600, color: '#fff', fontFamily: 'DM Mono',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)',
-              }}>{vid.dur}</div>
-            </div>
+        {/* Featured — first video, larger treatment */}
+        <FeaturedVideoCard vid={featured} />
 
-            {/* Info */}
-            <div style={{ padding: '12px 14px 14px' }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{vid.title}</div>
-              <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.38)', marginTop: 3, lineHeight: 1.2 }}>{vid.sub}</div>
-            </div>
-          </motion.a>
-        ))}
+        {/* Section label */}
+        <div style={{
+          fontSize: 10, color: 'rgba(255,255,255,0.28)',
+          letterSpacing: 2.5, textTransform: 'uppercase',
+          margin: '16px 0 10px',
+        }}>
+          All Visuals
+        </div>
+
+        {/* Stacked cinematic cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {rest.map((vid, i) => (
+            <VideoCard key={vid.id} vid={vid} index={i} />
+          ))}
+        </div>
       </div>
     </AppShell>
   )

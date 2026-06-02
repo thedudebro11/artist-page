@@ -7,9 +7,9 @@ const APPS = [
   { id: 'music',    label: 'Music',    emoji: '🎵', gradient: 'linear-gradient(145deg, #c9200d, #f0491a)' },
   { id: 'videos',   label: 'Videos',   emoji: '▶',  gradient: 'linear-gradient(145deg, #1c1c1e, #3a3a3c)' },
   { id: 'gallery',  label: 'Gallery',  emoji: '📸', gradient: 'linear-gradient(145deg, #1d6fa4, #1fa2c0)' },
-  { id: 'messages', label: 'Messages', emoji: '💬', gradient: 'linear-gradient(145deg, #1a8a38, #30d158)' },
+  { id: 'messages', label: '9 PM Notes', emoji: '💌', gradient: 'linear-gradient(145deg, #1a8a38, #30d158)' },
   { id: 'store',    label: 'Store',    emoji: '🛍️', gradient: 'linear-gradient(145deg, #4a35b0, #9b59f5)' },
-  { id: 'connect',  label: 'Connect',  emoji: '🔗', gradient: 'linear-gradient(145deg, #0a5eb8, #0a84ff)' },
+  { id: 'connect',  label: 'Socials',  emoji: '🔗', gradient: 'linear-gradient(145deg, #0a5eb8, #0a84ff)' },
 ]
 
 const DOCK_APPS = ['music', 'messages', 'store', 'connect']
